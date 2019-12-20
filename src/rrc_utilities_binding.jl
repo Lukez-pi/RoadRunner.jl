@@ -489,10 +489,19 @@ end
 ###############################################################################
 #                          StringArray Routines                               #
 ###############################################################################
+ ## Attention Return Null
+"""
+    getNumberOfStringElements(list::Ptr{RRStringArray})
+Returns the length of a string array.
+"""
 function getNumberOfStringElements(list::Ptr{RRStringArray})
   return ccall(dlsym(rrlib, :getNumberOfStringElements), cdecl, Int64, (Ptr{RRStringArray},), list)
 end
 
+"""
+    getStringElement(list::Ptr{RRStringArray}, index::Int64)
+Returns the indexth element from the string array in the argument value.
+"""
 function getStringElement(list::Ptr{RRStringArray}, index::Int64)
   char_pointer = ccall(dlsym(rrlib, :getStringElement), cdecl, Ptr{UInt8}, (Ptr{RRStringArray}, Int64), list, index)
   julia_str = unsafe_string(char_pointer)
