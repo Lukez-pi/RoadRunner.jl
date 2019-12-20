@@ -215,15 +215,30 @@ end
 #                              Helper Routines                                #
 ###############################################################################
 
-
+"""
+    getVectorLength(vector::Ptr{RRVector})
+Get the number of elements in a vector type.Vectors are indexed from zero
+Example: count = getVectorLength (myVector);
+"""
 function getVectorLength(vector::Ptr{RRVector})
   return ccall(dlsym(rrlib, :getVectorLength), cdecl, Int64, (Ptr{RRVector},), vector)
 end
 
+## Attention Return Null
+"""
+    createVector(size::Int64)
+Create a new vector with a given size. Vectors are indexed from zero
+Example: myVector = createVector (10);
+"""
 function createVector(size::Int64)
   return ccall(dlsym(rrlib, :createVector), cdecl, Ptr{RRVector}, (Int64,), size)
 end
 
+"""
+    getVectorElement(vector::Ptr{RRVector}, index::Int64)
+Get a particular element from a vector. Vectors are indexed from zero
+Example: status = getVectorElement (myVector, 10, *value);
+"""
 function getVectorElement(vector::Ptr{RRVector}, index::Int64)
   value = Array{Float64}(undef,1)
   status = ccall(dlsym(rrlib, :getVectorElement), cdecl, Bool, (Ptr{RRVector}, Int64, Ptr{Float64}), vector, index, value)
@@ -233,6 +248,11 @@ function getVectorElement(vector::Ptr{RRVector}, index::Int64)
   return value[1]
 end
 
+"""
+    setVectorElement(vector::Ptr{RRVector}, index::Int64, value::Float64)
+Set a particular element in a vector. Vectors are indexed from zero
+Example: status = setVectorElement (myVector, 10, 3.1415);
+"""
 function setVectorElement(vector::Ptr{RRVector}, index::Int64, value::Float64)
   status = ccall(dlsym(rrlib, :setVectorElement), cdecl, Bool, (Ptr{RRVector}, Int64, Float64), vector, index, value)
   if status == false
