@@ -2594,6 +2594,18 @@ function addParameter(rr::Ptr{Nothing}, pid::String, value::Float64, forceRegen:
   end
 end
 
+function setBoundary(rr::Ptr{Nothing}, sid::String, boundaryCondition::Bool, forceRegen::Bool)
+  status = false
+  if forceRegen == true
+    status = ccall(dlsym(rrlib, :setBoundary), cdecl, Bool, (Ptr{Nothing}, Ptr{UInt8}, Bool), rr, sid, boundaryCondition)
+  else
+    status = ccall(dlsym(rrlib, :setBoundary), cdecl, Bool, (Ptr{Nothing}, Ptr{UInt8}, Bool), rr, sid, boundaryCondition)
+  end
+  if status == false
+    error(getLastError())
+  end
+end
+
 function isModelLoaded(rr::Ptr{Nothing})
   return ccall(dlsym(rrlib, :isModelLoaded), cdecl, Int8, (Ptr{Nothing}, ), rr)
 end

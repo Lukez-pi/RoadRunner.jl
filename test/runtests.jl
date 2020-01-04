@@ -26,9 +26,9 @@ plotSimulation(data, rr)
 # plot(time, data[:, 2:end], label = speciesName)
 # RoadRunner.freeRRInstance(rr)
 
-# @testset "RoadRunner.jl" begin
-#     ssValues = RoadRunner.computeSteadyStateValues(rr)
-#     sol = [0.178571429, -4.38678616e-27]
-#     diff = ssValues - sol
-#     @test abs(diff[1]) < 1e-7 && abs(diff[2]) < 1e-7
-# end
+@testset "RoadRunner.jl" begin
+    ssValues = RoadRunner.computeSteadyStateValues(rr)
+    sol = [0.178571429, -4.38678616e-27]
+    diff = ssValues - sol
+    @test abs(diff[1]) < 1e-7 && abs(diff[2]) < 1e-7
+end
