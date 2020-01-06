@@ -122,7 +122,7 @@ end
 ###############################################################################
 #                            Read and Write Models                            #
 ###############################################################################
-# RRHandle's type is Ptr{Void}, in JUlia, Void is called Nothing
+# RRHandle's type is Ptr{Void}, in Julia, Void is called Nothing
 
 """
     loadSBML(rr::Ptr{Nothing}, sbml::String)
@@ -203,7 +203,12 @@ end
 Retrieve the current state of the model in the form of an SBML string.
 """
 function getCurrentSBML(handle::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getCurrentSBML), cdecl, Ptr{UInt8}, (Ptr{Nothing},), handle))
+  sbml_ptr = ccall(dlsym(rrlib, :getCurrentSBML), cdecl, Ptr{UInt8}, (Ptr{Nothing},), handle)
+  if sbml_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(sbml_ptr)
+  end
 end
 
 """
@@ -211,29 +216,42 @@ end
 Retrieve the SBML model that was last loaded into roadRunner.
 """
 function getSBML(rr::Ptr{Nothing})
-   return unsafe_string(ccall(dlsym(rrlib, :getSBML), Ptr{UInt8}, (Ptr{Nothing},), rr))
+  sbml_ptr = ccall(dlsym(rrlib, :getSBML), Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if sbml_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(sbml_ptr)
+  end
 end
 
 ###############################################################################
 #                          Utilities Functions                               #
 ###############################################################################
 
-## Attention: returns null
 """
     getAPIVersion()
 Retrieve the current version number of the C API library.
 """
 function getAPIVersion()
-  return unsafe_string(ccall(dlsym(rrlib, :getAPIVersion), cdecl, Ptr{UInt8}, ()))
+  api_version_ptr = ccall(dlsym(rrlib, :getAPIVersion), cdecl, Ptr{UInt8}, ())
+  if api_version_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(api_version_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getCPPAPIVersion(rr::Ptr{Nothing})
 Retrieve the current version number of the C++ API (Core RoadRunner API) library..
 """
 function getCPPAPIVersion(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getCPPAPIVersion), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  api_version_ptr = ccall(dlsym(rrlib, :getCPPAPIVersion), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if api_version_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(api_version_ptr)
+  end
 end
 
 """
@@ -251,7 +269,12 @@ end
 return roadrunner as a string, i.e. "1.0.0"
 """
 function getVersionStr()
-  return unsafe_string(ccall(dlsym(rrlib, :getVersionStr), cdecl, Ptr{UInt8}, ()))
+  version_ptr = ccall(dlsym(rrlib, :getVersionStr), cdecl, Ptr{UInt8}, ())
+  if version_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(version_ptr)
+  end
 end
 
 """
@@ -259,72 +282,104 @@ end
 return something like "1.0.0; compiled with clang "3.3 (tags/RELEASE_33/final)" on date Dec 8 2013, 17:24:57'
 """
 function getVersionEx()
-  return unsafe_string(ccall(dlsym(rrlib, :getVersionEx), cdecl, Ptr{UInt8}, ()))
+  version_ptr = ccall(dlsym(rrlib, :getVersionEx), cdecl, Ptr{UInt8}, ())
+  if version_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(version_ptr)
+  end
 end
 
 
-## Attention: returns null
 """
     getExtendedAPIInfo()
 Retrieve extended API info. Returns null if it fails, otherwise it returns a string with the info.
 """
-## Attention: returns null
 function getExtendedAPIInfo()
-  return unsafe_string(ccall(dlsym(rrlib, :getExtendedAPIInfo), cdecl, Ptr{UInt8}, ()))
+  api_info_ptr == ccall(dlsym(rrlib, :getExtendedAPIInfo), cdecl, Ptr{UInt8}, ())
+  if api_info_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(api_info_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getBuildDate()
 Retrieve the current build date of the library.
 """
 function getBuildDate()
-  return unsafe_string(ccall(dlsym(rrlib, :getBUildDate), cdecl, Ptr{UInt8}, ()))
+  build_date_ptr = ccall(dlsym(rrlib, :getBUildDate), cdecl, Ptr{UInt8}, ())
+  if build_date_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(build_date_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getBuildTime()
 Retrieve the current build time (HH:MM:SS) of the library.
 """
 function getBuildTime()
-  return unsafe_string(ccall(dlsym(rrlib, :getBuildTime), cdecl, Ptr{UInt8}, ()))
+  build_time_ptr = ccall(dlsym(rrlib, :getBuildTime), cdecl, Ptr{UInt8}, ())
+  if build_time_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(build_time_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getBuildDateTime()
 Retrieve the current build date + time of the library.
 """
 function getBuildDateTime()
-  return unsafe_string(ccall(dlsym(rrlib, :getBuildDateTime), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getBuildDateTime), cdecl, Ptr{UInt8}, ()))
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getCopyright(rr::Ptr{Nothing})
 Retrieve the current copyright notice for the library.
 """
 function getCopyright(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getCopyright), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getCopyright), cdecl, Ptr{UInt8}, ())
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getInfo(rr::Ptr{Nothing})
 Retrieve the current version number of the libSBML library.
 """
 function getInfo(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getInfo), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getInfo), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getlibSBMLVersion(rr::Ptr{Nothing})
 Retrieve info about current state of roadrunner, e.g. loaded model, conservationAnalysis etc.
 """
 function getlibSBMLVersion(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getlibSBMLVersion), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getlibSBMLVersion), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
 """
@@ -339,31 +394,43 @@ function setTempFolder(rr::Ptr{Nothing}, folder::String)
   end
 end
 
-## Attention: returns null
 """
     getTempFolder(rr::Ptr{Nothing})
 Retrieve the current temporary folder path. When RoadRunner is run in C generation mode it uses a temporary folder to store the generate C source code. This method can be used to get the current value for the temporary folder path.
 """
 function getTempFolder(rr::Ptr{Nothing})
-  return unsafe_string(ccal(dlsym(rrlib, :getTempFolder), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getTempFolder), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getWorkingDirectory()
 Retrieve the current working directory path.
 """
 function getWorkingDirectory()
-  return unsafe_string(ccall(dlsym(rrlib, :getWorkingDirectory), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getWorkingDirectory), cdecl, Ptr{UInt8}, ())
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Attention: returns null
 """
     getRRCAPILocation()
 Retrieve the directory path of the shared rrCApi library.
 """
 function getRRCAPILocation()
-  return unsafe_string(ccall(dlsym(rrlib, :getRRCAPILocation), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getRRCAPILocation), cdecl, Ptr{UInt8}, ())
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
 """
@@ -396,13 +463,17 @@ function setCompilerLocation(rr::Ptr{Nothing}, folder::String)
   end
 end
 
-## Attention: returns null
 """
     getCompilerLocation(rr::Ptr{Nothing})
 Get the path to a folder containing the compiler being used. Returns the path if successful, NULL otherwise
 """
 function getCompilerLocation(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getCompilerLocation), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getCompilerLocation), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
 """
@@ -416,13 +487,17 @@ function setSupportCodeFolder(rr::Ptr{Nothing}, folder::String)
   end
 end
 
-## Attention: returns null
 """
     getSupportCodeFolder(rr::Ptr{Nothing})
 Get the path to a folder containing support code.
 """
 function getSupportCodeFolder(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getSupportCodeFolder), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getSupportCodeFolder), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
 """
@@ -527,7 +602,6 @@ function setLogLevel(lvl::String)
   return ccall(dlsym(rrlib, :setLogLevel), cdecl, Int8, (Ptr{UInt8},), lvl)
 end
 
-## Attention Returns Null
 """
     getLogLevel()
 Get the logging status level as a pointer to a string. The logging level can be one of the following strings
@@ -535,19 +609,28 @@ Get the logging status level as a pointer to a string. The logging level can be 
 Example str = getLogLevel (void)
 """
 function getLogLevel()
-  return unsafe_string(ccall(dlsym(rrlib, :getLogLevel), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getLogLevel), cdecl, Ptr{UInt8}, ())
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
- ## Attention Returns Null
 """
     getLogFileName()
 Get a pointer to the string that holds the logging file name path. Example: str = getLogFileName (void)
 """
 function getLogFileName()
-  return unsafe_string(ccall(dlsym(rrlib, :getLogFileName), cdecl, Ptr{UInt8}, ()))
+  char_ptr = ccall(dlsym(rrlib, :getLogFileName), cdecl, Ptr{UInt8}, ())
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
-## Todo, enum type
+## Attention, enum type
 """
     logMsg()
 Create a log message.
@@ -640,13 +723,17 @@ function setConfigurationXML(rr::Ptr{Nothing}, caps::String)
   end
 end
 
-##Attention Returns Null
 """
     getConfigurationXML(rr::Ptr{Nothing})
 Get the simulator's capabilities.
 """
 function getConfigurationXML(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getConfigurationXML), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getConfigurationXML), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
 end
 
 """
@@ -852,13 +939,17 @@ function setSteadyStateSelectionList(rr::Ptr{Nothing}, list::String)
 end
 
 ## RRStringArray Helper
-## Attention Returns Null
 """
     getSteadyStateSelectionList(rr::Ptr{Nothing})
 Get the selection list for the steady state analysis.
 """
 function getSteadyStateSelectionList(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getSteadyStateSelectionList), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
+  str_array_ptr = ccall(dlsym(rrlib, :getSteadyStateSelectionList), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
+  if str_array_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(str_array_ptr)
+  end
 end
 
 ###############################################################################
@@ -887,46 +978,55 @@ function getReactionRate(rr::Ptr{Nothing}, idx::Int64)
 end
 
 ### RRVector Helper
-## Attention Returns NUll
 """
     getReactionRates(rr::Ptr{Nothing})
 Retrieve a vector of reaction rates as determined by the current state of the model.
 """
 function getReactionRates(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getReactionRates), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  rr_vector_ptr = ccall(dlsym(rrlib, :getReactionRates), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
-### RRVector Helper
-## Attention Returns Null
-
+## RRVector Helper
 """
     getReactionRatesEx(rr::Ptr{Nothing}, vec::Ptr{RRVector})
 Retrieve a vector of reaction rates given a vector of species concentrations.
 """
 function getReactionRatesEx(rr::Ptr{Nothing}, vec::Ptr{RRVector})
-  return_vec = call(dlsym(rrlib, :getReactionRatesEx), cdecl, Ptr{RRVector}, (Ptr{Nothing}, Ptr{RRVector}), rr, vec)
-  return return_vec
+  rr_vector_ptr = call(dlsym(rrlib, :getReactionRatesEx), cdecl, Ptr{RRVector}, (Ptr{Nothing}, Ptr{RRVector}), rr, vec)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
-## Attention Returns Null
 """
     getReactionIds(rr::Ptr{Nothing})
 Obtain the list of reaction Ids.
 """
 function getReactionIds(rr::Ptr{Nothing})
   data = ccall(dlsym(rrlib, :getReactionIds), cdecl, Ptr{Nothing}, (Ptr{Nothing},), rr)
-  num_rxns = getNumberOfReactions(rr)
-  rxnIds = String[]
-  try
-    for i = 1:num_rxns
-      push!(rxnIds, getStringElement(data, i - 1))
+  if data == C_NULL
+    error(getLastError())
+  else
+    num_rxns = getNumberOfReactions(rr)
+    rxnIds = String[]
+    try
+      for i = 1:num_rxns
+        push!(rxnIds, getStringElement(data, i - 1))
+      end
+    catch e
+      throw(e)
+    finally
+      freeStringArray(data)
     end
-  catch e
-    throw(e)
-  finally
-    freeStringArray(data)
+    return rxnIds
   end
-  return rxnIds
 end
 
 ###############################################################################
@@ -970,14 +1070,18 @@ function getRateOfChange(rr::Ptr{Nothing}, index::Int64)
 end
 
 ## RRVector Helper
-## Attention Returns Null
 """
     getRatesOfChangeEx(rr::Ptr{Nothing}, vec::Ptr{RRVector})
 Retrieve the vector of rates of change given a vector of floating species concentrations.
 Example: values = getRatesOfChangeEx (vector);
 """
 function getRatesOfChangeEx(rr::Ptr{Nothing}, vec::Ptr{RRVector})
-  return ccall(dlsym(rrlib, :getRatesOfChangeEx), cdecl, Ptr{Nothing}, (Ptr{Nothing}, Ptr{RRVector}), rr, vec)
+  rr_vector_ptr = ccall(dlsym(rrlib, :getRatesOfChangeEx), cdecl, Ptr{Nothing}, (Ptr{Nothing}, Ptr{RRVector}), rr, vec)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
 ###############################################################################
@@ -1044,25 +1148,28 @@ function getNumberOfBoundarySpecies(rr::Ptr{Nothing})
   return ccall(dlsym(rrlib, :getNumberOfBoundarySpecies), cdecl, Int64, (Ptr{Nothing},), rr)
 end
 
-## Attention Returns Null
 """"
     getBoundarySpeciesIds(rr::Ptr{Nothing})
 Obtain the list of boundary species Ids.
 """
 function getBoundarySpeciesIds(rr::Ptr{Nothing})
   data = ccall(dlsym(rrlib, :getBoundarySpeciesIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
-  b_species = String[]
-  try
-    num_b_species = getNumberOfBoundarySpecies(rr)
-    for i = 1:num_b_species
-      push!(b_species, getStringElement(data, i - 1))
+  if data == C_NULL
+    error(getLastError())
+  else
+    b_species = String[]
+    try
+      num_b_species = getNumberOfBoundarySpecies(rr)
+      for i = 1:num_b_species
+        push!(b_species, getStringElement(data, i - 1))
+      end
+    catch e
+      throw(e)
+    finally
+      freeStringArray(data)
     end
-  catch e
-    throw(e)
-  finally
-    freeStringArray(data)
+    return b_species
   end
-  return b_species
 end
 
 ###############################################################################
@@ -1171,25 +1278,28 @@ function getNumberOfIndependentSpecies(rr::Ptr{Nothing})
   return ccall(dlsym(rrlib, :getNumberOfIndependentSpecies), cdecl, Int64, (Ptr{Nothing},), rr)
 end
 
-## Attention Returns Null
 """"
     getFloatingSpeciesIds(rr::Ptr{Nothing})
 Obtain the list of floating species Id.
 """
 function getFloatingSpeciesIds(rr::Ptr{Nothing})
   data = ccall(dlsym(rrlib, :getFloatingSpeciesIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
-  species = String[]
-  try
-    num_species = getNumberOfFloatingSpecies(rr)
-    for i = 1:num_species
-      push!(species, getStringElement(data, i - 1))
+  if data == C_NULL
+    error(getLastError())
+  else
+    species = String[]
+    try
+      num_species = getNumberOfFloatingSpecies(rr)
+      for i = 1:num_species
+        push!(species, getStringElement(data, i - 1))
+      end
+    catch e
+      throw(e)
+    finally
+      freeStringArray(data)
     end
-  catch e
-    throw(e)
-  finally
-    freeStringArray(data)
+    return species
   end
-  return species
 end
 
 ###############################################################################
@@ -1209,26 +1319,33 @@ function setFloatingSpeciesInitialConcentrations(rr::Ptr{Nothing}, vec::Ptr{RRVe
 end
 
 ## RRVectorHelper
-## Attention Returns Null
 """"
     getFloatingSpeciesInitialConcentrations(rr::Ptr{Nothing})
 Get the initial floating species concentrations.
 Example: vec = getFloatingSpeciesInitialConcentrations (RRHandle handle);
-"""
+"""}
 function getFloatingSpeciesInitialConcentrations(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getFloatingSpeciesInitialConcentrations), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  rr_vector_ptr = ccall(dlsym(rrlib, :getFloatingSpeciesInitialConcentrations), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
 ## RRStringArrayHelper
-## Attention Returns Null
 """"
     getFloatingSpeciesInitialConditionIds(rr::Ptr{Nothing})
 Get the initial floating species Ids.
 Example: vec = getFloatingSpeciesInitialConditionIds (RRHandle handle);
 """
 function getFloatingSpeciesInitialConditionIds(rr::Ptr{Nothing})
-  data = ccall(dlsym(rrlib, :getFloatingSpeciesInitialConditionIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
-  return data
+  str_array_ptr = ccall(dlsym(rrlib, :getFloatingSpeciesInitialConditionIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
+  if str_array_ptr == C_NULL
+    error(getLastError())
+  else
+    return str_array_ptr
+  end
 end
 
 ###############################################################################
@@ -1278,25 +1395,28 @@ function getNumberOfGlobalParameters(rr::Ptr{Nothing})
   return ccall(dlsym(rrlib, :getNumberOfGlobalParameters), cdecl, Int64, (Ptr{Nothing},), rr)
 end
 
-## Attention Returns Null
 """"
     getGlobalParameterIds(rr::Ptr{Nothing})
 Obtain the list of global parameter Ids.
 """
 function getGlobalParameterIds(rr::Ptr{Nothing})
   data = ccall(dlsym(rrlib, :getGlobalParameterIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
-  global_params = String[]
-  try
-    num_elem = getNumberOfGlobalParameters(rr)
-    for i = 1:num_elem
-      push!(global_params, getStringElement(data, i - 1))
+  if data == C_NULL
+    error(getLastError())
+  else
+    global_params = String[]
+    try
+      num_elem = getNumberOfGlobalParameters(rr)
+      for i = 1:num_elem
+        push!(global_params, getStringElement(data, i - 1))
+      end
+    catch e
+      throw(e)
+    finally
+      freeStringArray(data)
     end
-  catch e
-    throw(e)
-  finally
-    freeStringArray(data)
+    return global_params
   end
-  return global_params
 end
 
 ###############################################################################
@@ -1360,73 +1480,100 @@ end
 ###############################################################################
 
 ## RRListHelper
-## Attention Return Null
 """"
     getElasticityCoefficientIds(rr::Ptr{Nothing})
 Obtain the list of elasticity coefficient Ids.
 """
 function getElasticityCoefficientIds(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getElasticityCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  rr_list_ptr = ccall(dlsym(rrlib, :getElasticityCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  if rr_list_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_list_ptr
+  end
 end
 
 ## RRListHelper
-## Attention Returns Null
 """"
     getUnscaledFluxControlCoefficientIds(rr::Ptr{Nothing})
 Obtain the list of unscaled flux control coefficient Ids.
 """
 function getUnscaledFluxControlCoefficientIds(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getUnscaledFluxControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  rr_list_ptr = ccall(dlsym(rrlib, :getUnscaledFluxControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  if rr_list_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_list_ptr
+  end
 end
 
 ## RRListHelper
-## Attention Returns Null
 """"
     getFluxControlCoefficientIds(rr::Ptr{Nothing})
 Obtain the list of flux control coefficient Ids.
 """
 function getFluxControlCoefficientIds(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getFluxControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  rr_list_ptr = ccall(dlsym(rrlib, :getFluxControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  if rr_list_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_list_ptr
+  end
 end
 
 ## RRListHelper
-## Attention Returns Null
 """"
     getUnscaledConcentrationControlCoefficientIds(rr::Ptr{Nothing})
 Obtain the list of unscaled concentration control coefficient Ids.
 """
 function getUnscaledConcentrationControlCoefficientIds(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getUnscaledConcentrationControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  rr_list_ptr = ccall(dlsym(rrlib, :getUnscaledConcentrationControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  if rr_list_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_list_ptr
+  end
 end
 
 ## RRListHelper
-# Attention Returns Null
 """"
     getConcentrationControlCoefficientIds(rr::Ptr{Nothing})
 Obtain the list of concentration coefficient Ids.
 """
 function getConcentrationControlCoefficientIds(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getConcentrationControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  rr_list_ptr = ccall(dlsym(rrlib, :getConcentrationControlCoefficientIds), cdecl, Ptr{RRList}, (Ptr{Nothing},), rr)
+  if rr_list_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_list_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Returns Null
 """"
     getUnscaledElasticityMatrix(rr::Ptr{Nothing})
 Retrieve the unscaled elasticity matrix for the current model.
 """
 function getUnscaledElasticityMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getUnscaledElasticityMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getUnscaledElasticityMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
-## RRDoubleMatrixHelper
-## Attention Returns Null
 """"
     getScaledElasticityMatrix(rr::Ptr{Nothing})
 Retrieve the scaled elasticity matrix for the current model.
 """
 function getScaledElasticityMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getScaledElasticityMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getScaledElasticityMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 """"
@@ -1443,43 +1590,59 @@ function getScaledFloatingSpeciesElasticity(rr::Ptr{Nothing}, reactionId::String
 end
 
 ## RRDoubleMatrixHelper
-## Attention Returns Null
 """"
     getUnscaledConcentrationControlCoefficientMatrix(rr::Ptr{Nothing})
 Retrieve the matrix of unscaled concentration control coefficients for the current model.
 """
 function getUnscaledConcentrationControlCoefficientMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getUnscaledConcentrationControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getUnscaledConcentrationControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Returns Null
 """"
     getScaledConcentrationControlCoefficientMatrix(rr::Ptr{Nothing})
 Retrieve the matrix of scaled concentration control coefficients for the current model.
 """
 function getScaledConcentrationControlCoefficientMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getScaledConcentrationControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getScaledConcentrationControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getUnscaledFluxControlCoefficientMatrix(rr::Ptr{Nothing})
 Retrieve the matrix of unscaled flux control coefficients for the current model.
 """
 function getUnscaledFluxControlCoefficientMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getUnscaledFluxControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getUnscaledFluxControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getScaledFluxControlCoefficientMatrix(rr::Ptr{Nothing})
 Retrieve the matrix of scaled flux control coefficients for the current model.
 """
 function getScaledFluxControlCoefficientMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getScaledFluxControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getScaledFluxControlCoefficientMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 """"
@@ -1667,89 +1830,120 @@ end
 ###############################################################################
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getFullJacobian(rr::Ptr{Nothing})
 Retrieve the full Jacobian for the current model.
 """
 function getFullJacobian(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getFullJacobian), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getFullJacobian), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getReducedJacobian(rr::Ptr{Nothing})
 Retrieve the reduced Jacobian for the current model. setComputeAndAssignConservationLaws (true) must be enabled
 """
 function getReducedJacobian(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getReducedJacobian), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getReducedJacobian), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getEigenvalues(rr::Ptr{Nothing})
 Retrieve the eigenvalue matrix for the current model.
 """
 function getEigenvalues(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getEigenvalues), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getEigenvalues), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getStoichiometryMatrix(rr::Ptr{Nothing})
 Retrieve the stoichiometry matrix for the current model.
 """
 function getStoichiometryMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getStoichiometryMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getStoichiometryMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getLinkMatrix(rr::Ptr{Nothing})
 Retrieve the Link matrix for the current model.
 """
 function getLinkMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getLinkMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getLinkMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getNrMatrix(rr::Ptr{Nothing})
 Retrieve the reduced stoichiometry matrix for the current model.
 """
 function getNrMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getNrMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getNrMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getConservationMatrix(rr::Ptr{Nothing})
 Retrieve the conservation matrix for the current model.
 The conservation laws as describe by row where the columns indicate the species Id.
 """
 function getConservationMatrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getConservationMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr ccall(dlsym(rrlib, :getConservationMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getL0Matrix(rr::Ptr{Nothing})
 Return the L0 Matrix. L0 is defined such that L0 Nr = N0. L0 forms part of the link matrix, L.
 N0 is the set of linear dependent rows from the lower portion of the reordered stoichiometry matrix.
 """
 function getL0Matrix(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getL0Matrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getL0Matrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{Nothing},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRComplexMatrixHelper
-## Attention Return Null
 """"
     getEigenVectors(matrix::Ptr{RRComplexMatrix})
 Calculate the eigen-vectors of a square real matrix. This function calculates the complex (right)eigenvectors of the given real matrix.
@@ -1757,11 +1951,15 @@ The complex matrix returned contains the eigenvectors in the columns, in the sam
 The right eigenvector v(j) of A satisfies: A * v(j) = lambda(j) * v(j)
 """
 function getEigenVectors(matrix::Ptr{RRComplexMatrix})
-  return ccall(dlsym(rrlib, :getEigenVectors), cdecl, Ptr{RRComplexMatrix}, (Ptr{RRComplexMatrix},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getEigenVectors), cdecl, Ptr{RRComplexMatrix}, (Ptr{RRComplexMatrix},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRComplexMatrixHelper
-## Attention Return Null
 """"
     getZEigenVectors(matrix::Ptr{RRComplexMatrix})
 Calculate the eigen-vectors of a square nonsymmetrix complex matrix. This function calculates the complex (right)eigenvectors of the given real matrix.
@@ -1769,17 +1967,26 @@ The complex matrix returned contains the eigenvectors in the columns, in the sam
 A * v(j) = lambda(j) * v(j)
 """
 function getZEigenVectors(matrix::Ptr{RRComplexMatrix})
-  return ccall(dlsym(rrlib, :getZEigenVectors), cdecl, Ptr{RRComplexMatrix}, (Ptr{RRComplexMatrix},), rr)
+  rr_matrix_ptr = ccall(dlsym(rrlib, :getZEigenVectors), cdecl, Ptr{RRComplexMatrix}, (Ptr{RRComplexMatrix},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRVector
-## Attention Return Null
 """"
     getConservedSums(rr::Ptr{Nothing})
 Return values for conservation laws using the current initial conditions.
 """
 function getConservedSums(rr::Ptr{Nothing})
-  return ccall(dlsym(rrlib, :getConservedSums), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  rr_vector_ptr = ccall(dlsym(rrlib, :getConservedSums), cdecl, Ptr{RRVector}, (Ptr{Nothing},), rr)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
 ###############################################################################
@@ -1797,14 +2004,18 @@ function getNumberOfRules(rr::Ptr{Nothing})
   end
 end
 
-## could return null, error checking
-## Attention Return Null
 """"
     getModelName(rr::Ptr{Nothing})
 Return the name of currently loaded SBML model.
 """
 function getModelName(rr::Ptr{Nothing})
-  return unsafe_string(ccall(dlsym(rrlib, :getModelName), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr))
+  char_ptr = ccall(dlsym(rrlib, :getModelName), cdecl, Ptr{UInt8}, (Ptr{Nothing},), rr)
+  if char_ptr == C_NULL
+    error(getLastError())
+  else
+    return unsafe_string(char_ptr)
+  end
+
 end
 
 ###############################################################################
@@ -1812,23 +2023,31 @@ end
 ###############################################################################
 
 ## RRDoubleMatrixHelper
-## Attention Return Null
 """"
     getEigenvaluesMatrix(mat::Ptr{RRDoubleMatrix})
 Compute the eigenvalues of a double matrix.
 """
 function getEigenvaluesMatrix(mat::Ptr{RRDoubleMatrix})
-  return ccall(dlsym(rrlib, :getEigenvaluesMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{RRDoubleMatrix},), rr)
+  rr_matrix_vector = ccall(dlsym(rrlib, :getEigenvaluesMatrix), cdecl, Ptr{RRDoubleMatrix}, (Ptr{RRDoubleMatrix},), rr)
+  if rr_matrix_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_matrix_ptr
+  end
 end
 
 ## RRComplexVectorHelper
-## Attention Return Null
 """"
     getEigenvaluesVector(mat::Ptr{RRDoubleMatrix})
 Compute the eigenvalues of a double matrix.
 """
 function getEigenvaluesVector(mat::Ptr{RRDoubleMatrix})
-  return ccall(dlsym(rrlib, :getEigenvaluesVector), cdecl, Ptr{RRComplexVector}, (Ptr{RRDoubleMatrix},), rr)
+  rr_vector_ptr = ccall(dlsym(rrlib, :getEigenvaluesVector), cdecl, Ptr{RRComplexVector}, (Ptr{RRDoubleMatrix},), rr)
+  if rr_vector_ptr == C_NULL
+    error(getLastError())
+  else
+    return rr_vector_ptr
+  end
 end
 
 ###############################################################################
