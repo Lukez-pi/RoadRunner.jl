@@ -1010,7 +1010,7 @@ end
 Obtain the list of reaction Ids.
 """
 function getReactionIds(rr::Ptr{Nothing})
-  data = ccall(dlsym(rrlib, :getReactionIds), cdecl, Ptr{Nothing}, (Ptr{Nothing},), rr)
+  data = ccall(dlsym(rrlib, :getReactionIds), cdecl, Ptr{RRStringArray}, (Ptr{Nothing},), rr)
   if data == C_NULL
     error(getLastError())
   else
