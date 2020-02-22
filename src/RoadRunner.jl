@@ -2820,6 +2820,18 @@ function addParameter(rr::Ptr{Nothing}, pid::String, value::Float64, forceRegen:
   end
 end
 
+function removeParameter(rr::Ptr{Nothing}, pid::String, forceRegen::Bool)
+  status = false
+  if forceRegen == true
+     status = ccall(dlsym(rrlib, :removeParameter), cdecl, Bool, (Ptr{Nothing}, Ptr{UInt8}), rr, pid)
+  else
+    status = ccall(dlsym(rrlib, :removeParameterNoRegen), cdecl, Bool, (Ptr{Nothing}, Ptr{UInt8}), rr, pid)
+  end
+  if status == false
+    error(getLastError())
+  end
+end
+
 function setBoundary(rr::Ptr{Nothing}, sid::String, boundaryCondition::Bool, forceRegen::Bool)
   status = false
   if forceRegen == true
